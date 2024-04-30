@@ -2,6 +2,7 @@ from typing import List
 import numpy as np
 import math
 import time
+import random
 
 
 class Task:
@@ -107,7 +108,6 @@ def simulatedAnnealing(data):
     N = len(data) 
     order = [task.id-1 for task in data]
     Cmax = getTotalTime(data)
-    import random
     for _ in range(100000):
         f, s = random.randint(0, N-1), random.randint(0, N-1)
         order[f], order[s] = order[s], order[f]
