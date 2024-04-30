@@ -102,12 +102,29 @@ def testMultiple(data, func):
     print(f"Total time: {total_time} s")
     
 
+def simulatedAnnealing(data):
+    data = np.array(data)
+    N = len(data) 
+    order = [task.id-1 for task in data]
+    Cmax = getTotalTime(data)
+    import random
+    for _ in range(100000):
+        f, s = random.randint(0, N-1), random.randint(0, N-1)
+        order[f], order[s] = order[s], order[f]
+        new_cmax = getTotalTime(data[order])
+        if new_cmax < Cmax:
+            Cmax = new_cmax
+        else:
+            order[f], order[s] = order[s], order[f]
+    return Cmax
+
 
 def main():
     # dataName = "data.100"
     data = readData("data/data.txt")
     data = data["data.001"] 
-    print(f"Total time: {getTotalTime(data)}")   
+    print(f"Total time: {getTotalTime(data)}")  
+    print(f"Simulated annealing Cmax: {simulatedAnnealing(data)}") 
     
 if __name__ == "__main__":
     main()
