@@ -103,6 +103,12 @@ def testMultiple(data, func):
         total_time += testSolution(data, key, func)
     print(f"Total time: {total_time} s")
     
+def getRandomIndices(start, stop):
+    f, s = 0, 0
+    while f == s:
+        f, s = random.randint(start, stop), random.randint(start, stop)
+    return f, s
+
 
 def simulatedAnnealing(data):
     data = np.array(data)
@@ -110,14 +116,18 @@ def simulatedAnnealing(data):
     order = [task.id-1 for task in data]
     Cmax = getTotalTime(data)
     y = []
-    for _ in range(100000):
-        f, s = random.randint(0, N-1), random.randint(0, N-1)
+    t = 100
+    for i in range(1, 100001):
+        f, s = getRandomIndices(0, N-1)
         order[f], order[s] = order[s], order[f]
         new_cmax = getTotalTime(data[order])
         if new_cmax < Cmax:
             Cmax = new_cmax
         else:
             order[f], order[s] = order[s], order[f]
+
+        if i%1000 == 0:
+            t *= 0.9
 
         y.append(Cmax)
 
