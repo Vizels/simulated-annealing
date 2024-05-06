@@ -110,28 +110,34 @@ def getRandomIndices(start, stop):
     return f, s
 
 
-def simulatedAnnealing(data):
+def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999):
     data = np.array(data)
     N = len(data) 
     order = [task.id-1 for task in data]
     Cmax = getTotalTime(data)
     y = []
-    t = 100
-    for i in range(1, 100001):
+    
+    for i in range(1, n_iter+1):
         f, s = getRandomIndices(0, N-1)
         order[f], order[s] = order[s], order[f]
         new_cmax = getTotalTime(data[order])
-        if new_cmax < Cmax:
+        delta = new_cmax - Cmax
+        if delta < 0:
             Cmax = new_cmax
         else:
-            order[f], order[s] = order[s], order[f]
+            probabilty = math.exp(-delta/t)
+            if random.random() < probabilty:
+                Cmax = new_cmax
+            else:
+                order[f], order[s] = order[s], order[f]
 
-        if i%1000 == 0:
-            t *= 0.9
+        
+        t *= alpha
 
-        y.append(Cmax)
+        if i%100 == 0:
+            y.append(Cmax)
 
-    x = np.arange(100000)
+    x = np.arange(len(y))
     plt.plot(x, y)
     plt.show()
     
