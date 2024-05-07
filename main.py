@@ -123,12 +123,25 @@ def calculateMinMaxDelta(data, n_iter=1000):
             deltas.append(delta)
     return min(deltas), max(deltas)
 
-def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999):
+def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999, maxP=0.5, minP=0.1):
     data = np.array(data)
     N = len(data) 
     order = [task.id-1 for task in data]
     Cmax = getTotalTime(data)
     y = []
+    # temperatures = []
+    
+    minDelta, maxDelta = calculateMinMaxDelta(data)
+    
+    t_start = -maxDelta/math.log(maxP)
+    t_stop = -minDelta/math.log(minP)
+    
+    
+    alpha = math.pow(t_stop/t_start, 1/(5-1))
+    print(f"alpha: {alpha}")
+    t = t_start
+    print(f"start T = {t_start}")
+    print(f"end T = {t_stop}")
     
     for i in range(1, n_iter+1):
         f, s = getRandomIndices(0, N-1)
@@ -139,19 +152,25 @@ def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999):
             Cmax = new_cmax
         else:
             probabilty = math.exp(-delta/t)
+            # probabilities.append(probabilty)
             if random.random() < probabilty:
                 Cmax = new_cmax
             else:
                 order[f], order[s] = order[s], order[f]
 
-        
-        t *= alpha
+        # temperatures.append(t)
+        if (i % int(n_iter/5) == 0):
+            t *= alpha
 
         if i%100 == 0:
             y.append(Cmax)
 
+    print(f"Real end T = {t}")
     x = np.arange(len(y))
+
     plt.plot(x, y)
+    # plt.plot(np.arange(len(temperatures)), temperatures)
+    # plt.plot(np.arange(len(temperatures)), temperatures)
     plt.show()
     
     return Cmax
@@ -162,8 +181,7 @@ def main():
     data = readData("data/data.txt")
     data = data["data.001"] 
     print(f"Total time: {getTotalTime(data)}")  
-    print(f"Simulated annealing Cmax: {simulatedAnnealing(data)}") 
+    print(f"Simulated annealing Cmax: {simulatedAnnealing(data, n_iter = 100000)}") 
     
 if __name__ == "__main__":
     main()
-    
