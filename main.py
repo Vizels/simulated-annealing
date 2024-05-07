@@ -109,6 +109,19 @@ def getRandomIndices(start, stop):
         f, s = random.randint(start, stop), random.randint(start, stop)
     return f, s
 
+def calculateMinMaxDelta(data, n_iter=1000):
+    deltas = []
+    N = len(data)
+    order = [task.id-1 for task in data]
+    Cmax = getTotalTime(data)
+    for i in range(n_iter):
+        f, s = getRandomIndices(0, N-1)
+        order[f], order[s] = order[s], order[f]
+        new_cmax = getTotalTime(data[order])
+        delta = abs(Cmax - new_cmax)
+        if delta != 0:
+            deltas.append(delta)
+    return min(deltas), max(deltas)
 
 def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999):
     data = np.array(data)
