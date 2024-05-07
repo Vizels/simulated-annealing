@@ -90,10 +90,11 @@ def printOrder(order):
 def testSolution(data, datasetName: str, func) -> None:
     data = np.asarray(data[datasetName])
     start = time.time()
-    order = func(data)
+    Cmax, order = func(data)
     end = time.time()
     totalTime = end - start
     print(f"{datasetName} {getTotalTime(data[order])} {totalTime:.5} s")
+    printOrder(order)
     return totalTime
     
 
@@ -141,16 +142,16 @@ def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999):
     plt.plot(x, y)
     plt.show()
     
-    return Cmax
+    return Cmax, order
 
 
 def main():
-    # dataName = "data.100"
     data = readData("data/data.txt")
-    data = data["data.001"] 
-    print(f"Total time: {getTotalTime(data)}")  
-    print(f"Simulated annealing Cmax: {simulatedAnnealing(data)}") 
+    testSolution(data, "data.002", simulatedAnnealing)  
+    #dataName = "data.100"
+    #data = data["data.002"] 
+    #print(f"Total time: {getTotalTime(data)}")
+    #print(f"Simulated annealing Cmax: {simulatedAnnealing(data)}") 
     
 if __name__ == "__main__":
     main()
-    
