@@ -97,18 +97,20 @@ def testSolution(data, datasetName: str, func) -> None:
     printOrder(order)
     return totalTime
     
-
+    
 def testMultiple(data, func):
     total_time = 0
     for key in data:
         total_time += testSolution(data, key, func)
     print(f"Total time: {total_time} s")
     
+    
 def getRandomIndices(start, stop):
     f, s = 0, 0
     while f == s:
         f, s = random.randint(start, stop), random.randint(start, stop)
     return f, s
+
 
 def calculateMinMaxDelta(data, n_iter=1000):
     deltas = []
@@ -124,7 +126,8 @@ def calculateMinMaxDelta(data, n_iter=1000):
             deltas.append(delta)
     return min(deltas), max(deltas)
 
-def simulatedAnnealing(data, n_iter=100000, maxP=0.5, minP=0.1):
+
+def simulatedAnnealing(data, n_iter=100000, maxP=0.5, minP=0.1, n_temp_changes=None):
     data = np.array(data)
     N = len(data)
     order = [task.id-1 for task in data]
@@ -136,15 +139,20 @@ def simulatedAnnealing(data, n_iter=100000, maxP=0.5, minP=0.1):
     
     t_start = -maxDelta/math.log(maxP)
     t_stop = -minDelta/math.log(minP)
+
+    update_t_iters = 1 if n_temp_changes is None else (n_iter // n_temp_changes)
     
-    
-    alpha = math.pow(t_stop/t_start, 1/(n_iter-1))
+    if n_temp_changes is None: 
+        alpha = math.pow(t_stop/t_start, 1/(n_iter-1))
+    else:
+        alpha = math.pow(t_stop/t_start, 1/(n_temp_changes-1))
     
     print(f"alpha: {alpha}")
     t = t_start
     print(f"start T = {t_start}")
     print(f"end T = {t_stop}")
     
+
     for i in range(1, n_iter+1):
         f, s = getRandomIndices(0, N-1)
         order[f], order[s] = order[s], order[f]
@@ -160,7 +168,7 @@ def simulatedAnnealing(data, n_iter=100000, maxP=0.5, minP=0.1):
                 order[f], order[s] = order[s], order[f]
 
         # temperatures.append(t)
-        if (i % 1 == 0):
+        if (i % update_t_iters == 0):
             t *= alpha
 
         if i%100 == 0:
@@ -181,8 +189,9 @@ def main():
     data = readData("data/data.txt")
     data = data["data.001"] 
     print(f"Total time: {getTotalTime(data)}")  
-    print(f"Simulated annealing Cmax: {simulatedAnnealing(data, n_iter = 100000)}") 
+    print(f"Simulated annealing Cmax: {simulatedAnnealing(data, n_iter = 100000, n_temp_changes=4)}") 
     
+
 if __name__ == "__main__":
     main()
 
