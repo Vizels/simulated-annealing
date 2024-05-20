@@ -4,7 +4,7 @@ import math
 import time
 from matplotlib import pyplot as plt
 import random
-
+import csv
 
 class Task:
     def __init__(self, id: int, tpm: List[int], tpm_sum: int) -> None:
@@ -127,7 +127,7 @@ def calculateMinMaxDelta(data, n_iter=1000):
     return min(deltas), max(deltas)
 
 
-def simulatedAnnealing(data, n_iter=100000, maxP=0.5, minP=0.1, n_temp_changes=None):
+def simulatedAnnealing(data, n_iter=100000, maxP=0.9, minP=0.1, n_temp_changes=None):
     data = np.array(data)
     N = len(data)
     order = [task.id-1 for task in data]
@@ -177,9 +177,11 @@ def simulatedAnnealing(data, n_iter=100000, maxP=0.5, minP=0.1, n_temp_changes=N
     print(f"Real end T = {t}")
     x = np.arange(len(y))
 
+    # plt.plot(np.arange(len(temperatures)), temperatures)
+    # plt.plot(np.arange(len(temperatures)), temperatures)
     plt.plot(x, y)
-    # plt.plot(np.arange(len(temperatures)), temperatures)
-    # plt.plot(np.arange(len(temperatures)), temperatures)
+    plt.xlabel("Iteration *10^(-2)")
+    plt.ylabel("Cmax")
     plt.show()
     
     return Cmax, order
@@ -188,8 +190,38 @@ def simulatedAnnealing(data, n_iter=100000, maxP=0.5, minP=0.1, n_temp_changes=N
 def main():
     data = readData("data/data.txt")
     data = data["data.001"] 
-    print(f"Total time: {getTotalTime(data)}")  
-    print(f"Simulated annealing Cmax: {simulatedAnnealing(data, n_iter = 100000, n_temp_changes=4)}") 
+    print(f"Total time: {getTotalTime(data)}")
+
+    #writer = csv.writer(open("results.csv", 'w'))
+    #writer.writerow(["n_iter", "n_temp_changes", "Cmax"])
+
+    
+    Cmax_table = []
+    
+    # iterations = np.linspace(10, 10000, 30)
+    # for n_iter in iterations:
+    #     print(f"n_iter: {n_iter}")
+    #     Cmax, order = simulatedAnnealing(data, n_iter = int(n_iter))
+    #     Cmax_table.append(Cmax)
+    #     print(f"Simulated annealing Cmax: {Cmax}, order: {order}")
+
+    #     #writer.writerow([n_iter, n_temp_changes, Cmax])
+
+    # n_temp_changes = np.linspace(1, 10, 10)
+    # for i in n_temp_changes:
+    #     print(f"n_temp_changes: {i}")
+    #     Cmax, order = simulatedAnnealing(data, n_temp_changes=i, n_iter=10000)
+    #     Cmax_table.append(Cmax)
+    #     print(f"Simulated annealing Cmax: {Cmax}, order: {order}")
+
+
+    # # plt.plot(iterations, Cmax_table)
+    # plt.plot(n_temp_changes, Cmax_table)
+    # plt.xlabel("Temperature steps number")
+    # plt.ylabel("Cmax")
+    # plt.show()
+
+    print(f"Simulated annealing Cmax: {simulatedAnnealing(data, minP=0.3, n_iter=10000)}")
     
 
 if __name__ == "__main__":
