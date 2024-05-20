@@ -115,7 +115,7 @@ def calculateMinMaxDelta(data, n_iter=1000):
     N = len(data)
     order = [task.id-1 for task in data]
     Cmax = getTotalTime(data)
-    for i in range(n_iter):
+    for _ in range(n_iter):
         f, s = getRandomIndices(0, N-1)
         order[f], order[s] = order[s], order[f]
         new_cmax = getTotalTime(data[order])
@@ -124,9 +124,9 @@ def calculateMinMaxDelta(data, n_iter=1000):
             deltas.append(delta)
     return min(deltas), max(deltas)
 
-def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999, maxP=0.5, minP=0.1):
+def simulatedAnnealing(data, n_iter=100000, maxP=0.5, minP=0.1):
     data = np.array(data)
-    N = len(data) 
+    N = len(data)
     order = [task.id-1 for task in data]
     Cmax = getTotalTime(data)
     y = []
@@ -138,7 +138,8 @@ def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999, maxP=0.5, mi
     t_stop = -minDelta/math.log(minP)
     
     
-    alpha = math.pow(t_stop/t_start, 1/(5-1))
+    alpha = math.pow(t_stop/t_start, 1/(n_iter-1))
+    
     print(f"alpha: {alpha}")
     t = t_start
     print(f"start T = {t_start}")
@@ -153,14 +154,13 @@ def simulatedAnnealing(data, n_iter=100000, t=1000, alpha = 0.9999, maxP=0.5, mi
             Cmax = new_cmax
         else:
             probabilty = math.exp(-delta/t)
-            # probabilities.append(probabilty)
             if random.random() < probabilty:
                 Cmax = new_cmax
             else:
                 order[f], order[s] = order[s], order[f]
 
         # temperatures.append(t)
-        if (i % int(n_iter/5) == 0):
+        if (i % 1 == 0):
             t *= alpha
 
         if i%100 == 0:
